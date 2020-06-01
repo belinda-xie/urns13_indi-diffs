@@ -7,7 +7,6 @@
   <script src="./jspsych-6/plugins/jspsych-survey-multi-choice.js"></script>
 	<script src="./jspsych-6/plugins/jspsych-html-button-response.js"></script>
 	<script src="./jspsych-6/plugins/jspsych-image-button-response.js"></script>
-  <!-- <script src="./js/plugins/jspsych-survey-text.js"></script> -->
   <script src="./jspsych-6/plugins/jspsych-survey-text.js"></script>
   <script src="./jspsych-6/plugins/jspsych-survey-text-time.js"></script>
 	<script src="./js/welcome.js"></script>
@@ -396,7 +395,7 @@ for (i = 0; i < animals.length; i++) {
   };
 
     // if (i == randRound) {
-      timeline.push(estimateA)
+      // timeline.push(estimateA)
     // } else {
     //   timeline.push(estimateA2)
     // };
@@ -473,7 +472,7 @@ for (i = 0; i < animals.length; i++) {
 
     // trial_duration: 3000
   };
-  timeline.push(estimateB);
+  // timeline.push(estimateB);
 
   // 11. flag end of round, continue next round, go back to 7, unless last round
   var endRound = {                   // 2nd informant
@@ -683,7 +682,27 @@ var crt2_emily = {       // intuitive = June, correct = Emily
     placeholder: "Third daughter's name",
     required: true}]
 };
-// timeline.push(crt2_emily);
+
+
+var crts = {
+  timeline: [{
+      type: 'survey-text',
+      questions:
+        [{prompt: jsPsych.timelineVariable('crtPrompt'),
+          placeholder: jsPsych.timelineVariable('crtPlaceholder'),
+          required: true}],
+    }],
+    timeline_variables: [
+      {crtPrompt: "How many cubic feet of dirt are there in a hole that is " +
+        "3' deep x 3' wide x 3' long?",
+        crtPlaceholder: "_____ cubic feet of dirt"},
+      {crtPrompt: "Emily's father had three daughters." +
+        "The first two are named April and May.<br>What is the third daughter's name?",
+        crtPlaceholder: "Third daughter's name"},
+    ],
+    randomize_order: true
+};
+timeline.push(crts);
 
 var crt2_hole = {       // intuitive = 27, correct = none
   type: 'survey-text',
