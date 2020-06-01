@@ -655,35 +655,6 @@ var calccheck = {
 // timeline.push(calccheck);
 
 // --------------------- COGNITIVE REFLECTION ---------------------------- //
-var crt2_race = {       // intuitive = 1st, correct = 2nd
-  type: 'survey-text',
-  questions:
-    [{prompt: "If you're running a race and you pass the person " +
-    "in second place, what place are you in?",
-    placeholder: "_____ place",
-    required: true}]
-};
-// timeline.push(crt2_race);
-
-var crt2_farmer = {       // intuitive = 7, correct = 8
-  type: 'survey-text',
-  questions:
-    [{prompt: "A farmer had 15 sheep and all but 8 died. How many are left?",
-    placeholder: "_____ sheep left",
-    required: true}]
-};
-// timeline.push(crt2_farmer);
-
-var crt2_emily = {       // intuitive = June, correct = Emily
-  type: 'survey-text',
-  questions:
-    [{prompt: "Emily's father had three daughters." +
-      "The first two are named April and May.<br>What is the third daughter's name?",
-    placeholder: "Third daughter's name",
-    required: true}]
-};
-
-
 var crts = {
   timeline: [{
       type: 'survey-text',
@@ -693,56 +664,30 @@ var crts = {
           required: true}],
     }],
     timeline_variables: [
-      {crtPrompt: "How many cubic feet of dirt are there in a hole that is " +
-        "3' deep x 3' wide x 3' long?",
-        crtPlaceholder: "_____ cubic feet of dirt"},
+      {crtPrompt: "If you're running a race and you pass the person " +
+      "in second place, what place are you in?",
+        crtPlaceholder: "_____ place"},             // intuitive = 1st, correct = 2nd
+      {crtPrompt: "A farmer had 15 sheep and all but 8 died. How many are left?",
+        crtPlaceholder: "_____ sheep left"},        // intuitive = 7, correct = 8
       {crtPrompt: "Emily's father had three daughters." +
         "The first two are named April and May.<br>What is the third daughter's name?",
-        crtPlaceholder: "Third daughter's name"},
+        crtPlaceholder: "Third daughter's name"},   // intuitive = June, correct = Emily
+      {crtPrompt: "How many cubic feet of dirt are there in a hole that is " +
+        "3' deep x 3' wide x 3' long?",
+        crtPlaceholder: "_____ cubic feet of dirt"},// intuitive = 27, correct = none
+      {crtPrompt: "A bat and a ball cost $1.10 in total.The bat costs $1.00 more than the ball.<br>" +
+      "How much does the ball cost?",
+        crtPlaceholder: "_____ cents"},            // intuitive = 10, correct = 5
+      {crtPrompt: "If it takes 5 machines 5 minutes to make 5 widgets,<br>" +
+        "how long would it take 100 machines to make 100 widgets?",
+        crtPlaceholder: "_____ minutes"},           // intuitive = 100, correct = 5
+      {crtPrompt: "In a lake, there is a patch of lily pads. Every day, the patch doubles in size.<br>" +
+        "If it takes 48 days for the patch to cover the entire lake,<br>how long would it take for the patch to cover half of the lake?",
+        crtPlaceholder: "_____ days"},             // intuitive = 24, correct = 47
     ],
     randomize_order: true
 };
 timeline.push(crts);
-
-var crt2_hole = {       // intuitive = 27, correct = none
-  type: 'survey-text',
-  questions:
-    [{prompt: "How many cubic feet of dirt are there in a hole that is " +
-      "3' deep x 3' wide x 3' long?",
-    placeholder: "_____ cubic feet of dirt",
-    required: true}]
-};
-// timeline.push(crt2_hole);
-
-var crt1_bat = {       // intuitive = 27, correct = none
-  type: 'survey-text',
-  questions:
-    [{prompt: "A bat and a ball cost $1.10 in total.The bat costs $1.00 more than the ball.<br>" +
-    "How much does the ball cost?",
-    placeholder: "_____ cents",
-    required: true}]
-};
-// timeline.push(crt1_bat);
-
-var crt1_widgets = {       // intuitive = 27, correct = none
-  type: 'survey-text',
-  questions:
-    [{prompt: "If it takes 5 machines 5 minutes to make 5 widgets,<br>" +
-      "how long would it take 100 machines to make 100 widgets?",
-    placeholder: "_____ minutes",
-    required: true}]
-};
-// timeline.push(crt1_widgets);
-
-var crt1_lake = {       // intuitive = 27, correct = none
-  type: 'survey-text',
-  questions:
-    [{prompt: "In a lake, there is a patch of lily pads. Every day, the patch doubles in size.<br>" +
-      "If it takes 48 days for the patch to cover the entire lake,<br>how long would it take for the patch to cover half of the lake?",
-    placeholder: "_____ days",
-    required: true}]
-};
-// timeline.push(crt1_lake);
 
 // ----------------- finish with attention check question ---------------- //
 var attnCheck = {
