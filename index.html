@@ -80,7 +80,6 @@ function startExperiment(){
     // on_trial_finish: function(data){saveData(filename, jsPsych.data.get().csv())},  // use for UNSW server - uncomment to locally save data file as csv
     on_finish: function() {
       jsPsych.data.displayData('csv');
-
       endExperiment( jsPsych.data.get().csv(), function() { document.write('<div id="endscreen" class="endscreen" style="width:1000px"><div class="endscreen" style="text-align:center; border:0px solid; padding:10px; font-size:120%; width:800px; float:right"><p><br><br><br>All done!<br><br>Your completion code is <span id="turkcode" style="font-weight:bold;font-size:130%">' + turkcode + '</span>. To receive payment for the HIT, return to the Amazon Mechanical Turk page and enter this code. Please contact us if something goes wrong and we\'ll fix it as quickly as possible.</p></div></div>') })
     }
   });
@@ -260,7 +259,7 @@ var loop_node = {
 // begin for loop for 5 rounds
 var animals = ['ants', 'bees', 'cranes', 'crickets', 'flamingos'];
 // var animals = jsPsych.randomization.repeat(animals, 1);
-var i;
+var j;
 
 var devs = [0.25, 0.15, 0.2, 0.15, 0.25];
 
@@ -279,38 +278,143 @@ var estimatesA = [];
 var estimatesB = new Array;
 
 var lastA = 0;
+
 var closest = 0;
 
 var rounds1 = [0,1,2,3,4];
 
-for (i = 0; i < animals.length; i++) {
-  // 7. get ready - click to see an image
 
-  if (i < 1) {
+// var estimateA = {
+//   type: 'survey-text-time',
+//   questions: [{prompt: "How many " + animals[i] + " were shown in the image?",
+//               placeholder: "Number of " + animals[i],
+//               required: true}],
+//   preamble: "Round " + [i + 1] + ": part A estimate",
+//   time_limit: 5000,
+//   on_finish:function(data) {
+//     estimatesA.push(data.responses);
+//     lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+//     lastA = lastA.substr(14,2);
+//     console.log(lastA);
+//     },
+//   };
+//   // timeline.push(estimateA);
+//
+//
+//   var estimateB = {
+//     type: 'survey-text',
+//     questions: [
+//       {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[i]}
+//     ],
+//     preamble: function() {
+//       return("this was your last estimate: " + lastA);
+//     }
+//   };
+
+// timeline.push(estimateB);
+
+for (a = 0; a < animals.length; a = a + 1) {
+  var estimateAA = {
+    type: 'survey-text-time',
+    questions: [
+      {prompt: "How many " + animals[a] + " were shown in the image?",
+      placeholder: "Number of " + animals[a],
+      required: true}
+    ],
+    preamble: "Round " + [a + 1] + ": part A estimate",
+    time_limit: 5000,
+    // time_limit: 15000,
+    on_finish:function(data) {
+      // console.log(rounds1[i]);
+      // if (i == randRound) {
+        estimatesA.push(data.responses);
+        // console.log("randomly selected round")
+      // };
+      lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+      lastA = lastA.substr(14,3);
+      if (lastA.slice(2) == '"') {
+        lastA = lastA.substr(0,2);
+      };
+      console.log(lastA);
+    },
+  };
+  timeline.push(estimateAA);
+  
+ ///////////////// WORK ON THIS
+  if (lastA < correctNos[a]) {
+    // var target = lastA * (1 + thisDev);
+    console.log("smaller");
+  } else {
+    if (lastA == correctNos[a]) {
+      // if (Math.random() < 0.5) {
+      //   var target = lastA * (1 + thisDev);
+      //   }
+    } else {
+      // var target = lastA * (1 - thisDev);
+      console.log("larger");
+    }
+  };
+  console.log(target);
+//////////////////////////////////////
+
+  // function calcTarget(lastA) {
+  //   if (lastA < correctNos[j]) {
+  //     var target = lastA * (1 + thisDev);
+  //     console.log("smaller");
+  //   } else {
+  //     if (lastA == correctNos[j]) {
+  //       if (Math.random() < 0.5) {
+  //         var target = lastA * (1 + thisDev);
+  //         }
+  //     } else {
+  //       var target = lastA * (1 - thisDev);
+  //       console.log("larger");
+  //     }
+  //   };
+  //   console.log(target);
+  // };
+  //
+  // return calcTarget(lastA);
+
+
+  // closest = peersMat[j].reduce(function(prev, curr) {
+  //   return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+  // });
+  // console.log(closest)
+
+}
+
+
+
+
+
+// var i = 0;
+// for (i = 0; i < 5; i++) {
+for (j = 0; j < 3; j = j + 1) {
+
+  if (j < 1) {
     var text1 = ["You have answered all control questions correctly.<br>The task starts now.<br><br>"];
   } else {
     var text1 = ["A new round starts now.<br><br>"];
   };
 
-  var preRound = {                   // 2nd informant
+  var preRound = {                   // 7. get ready - click to see an image
     type: 'html-button-response',
     button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
     choices: ['Continue'],
     on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
     is_html: true,
-    stimulus: text1 + "When you click below, an image will appear showing a number of <b>" + animals[i] + "</b>.<br>" +
+    stimulus: text1 + "When you click below, an image will appear showing a number of <b>" + animals[j] + "</b>.<br>" +
       "After <b>6 seconds</b>, the image disappears.<br>" +
-      "A box will appear in which you have to estimate how many " + animals[i] + " there were.<br><br>" +
+      "A box will appear in which you have to estimate how many " + animals[j] + " there were.<br><br>" +
       "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
       "Click below when you are ready.<br><br>"
   };
   // timeline.push(preRound);
 
-  // 8. see image
-
-  var viewImage = {
+    var viewImage = {        // 8. see image
     type: 'image-button-response',
-    stimulus: 'img/' + animals[i] + '.jpg',
+    stimulus: 'img/' + animals[j] + '.jpg',
     stimulus_height: beastImgHeight,
     choices: ['Continue'],
     button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -322,65 +426,85 @@ for (i = 0; i < animals.length; i++) {
   };
   // timeline.push(viewImage);
 
-  // function showLastEstimate() {
-  //   // var lastEstimate = [];
-  //   var lastEstimate = jsPsych.data.get().last(1).values()[0].responses;
-  //   console.log(lastEstimate);
-  // };
-
-
-  var thisDev = devs[i];
+  var thisDev = devs[j];
 
   var estimateA = {
     type: 'survey-text-time',
     questions: [
-      {prompt: "How many " + animals[i] + " were shown in the image?",
-      placeholder: "Number of " + animals[i],
+      {prompt: "How many " + animals[j] + " were shown in the image?",
+      placeholder: "Number of " + animals[j],
       required: true}
     ],
-    preamble: "Round " + [i + 1] + ": part A estimate",
+    preamble: "Round " + [j + 1] + ": part A estimate",
     time_limit: 5000,
     // time_limit: 15000,
     on_finish:function(data) {
       // console.log(rounds1[i]);
       // if (i == randRound) {
         estimatesA.push(data.responses);
-        console.log("randomly selected round")
+        // console.log("randomly selected round")
       // };
       lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-      lastA = lastA.substr(14,2);
+      lastA = lastA.substr(14,3);
+      if (lastA.slice(2) == '"') {
+        lastA = lastA.substr(0,2);
+      };
       console.log(lastA);
 
-      // was participant's guess higher/lower than the correct answer?
-      if (lastA < correctNos[i]) {
-        var target = lastA * (1 + thisDev);
-      } else {
-        if (lastA == correctNos[i]) {
-          if (Math.random() < 0.5) {
-            var target = lastA * (1 + thisDev);
-            }
-        } else {
-          var target = lastA * (1 - thisDev);
-        }
-      };
-
-      closest = 99;
-    // closest = peersMat[i].reduce(function(prev, curr) {
-    //     return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-    //   });
-      return(closest)
+      // // was participant's guess higher/lower than the correct answer?
+      // console.log(correctNos[j]);
+      // if (lastA < correctNos[j]) {
+      //   var target = lastA * (1 + thisDev);
+      // } else {
+      //   if (lastA == correctNos[j]) {
+      //     if (Math.random() < 0.5) {
+      //       var target = lastA * (1 + thisDev);
+      //       }
+      //   } else {
+      //     var target = lastA * (1 - thisDev);
+      //   }
+      // };
+      // console.log(target);
+      //
+      // closest = peersMat[j].reduce(function(prev, curr) {
+      //   return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+      // });
+      // console.log(closest)
 
     },
   };
+  // timeline.push(estimateA);
+
+  // was participant's guess higher/lower than the correct answer?
+  console.log(correctNos[j]);
+  if (lastA < correctNos[j]) {
+    var target = lastA * (1 + thisDev);
+  } else {
+    if (lastA == correctNos[j]) {
+      if (Math.random() < 0.5) {
+        var target = lastA * (1 + thisDev);
+        }
+    } else {
+      var target = lastA * (1 - thisDev);
+    }
+  };
+  console.log(target);
+
+  closest = peersMat[j].reduce(function(prev, curr) {
+    return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+  });
+  console.log(closest);
+
+
 
   var estimateA2 = {
     type: 'survey-text-time',
     questions: [
-      {prompt: "How many " + animals[i] + " were shown in the image?",
-      placeholder: "Number of " + animals[i],
+      {prompt: "How many " + animals[j] + " were shown in the image?",
+      placeholder: "Number of " + animals[j],
       required: true}
     ],
-    preamble: "Round " + [i + 1] + ": part A estimate",
+    preamble: "Round " + [j + 1] + ": part A estimate",
     time_limit: 5000,
     // time_limit: 15000,
     on_finish:function(data) {
@@ -395,7 +519,7 @@ for (i = 0; i < animals.length; i++) {
   };
 
     // if (i == randRound) {
-      // timeline.push(estimateA)
+      timeline.push(estimateA)
     // } else {
     //   timeline.push(estimateA2)
     // };
@@ -424,11 +548,11 @@ for (i = 0; i < animals.length; i++) {
 
   // var lastA = "12345678911234567".substr(14,16);
 
-  if (lastA < correctNos[i]) {
-    console.log("guess smaller than correct")
-  } else {
-    console.log("guess larger")
-  };
+  // if (lastA < correctNos[i]) {
+  //   console.log("guess smaller than correct")
+  // } else {
+  //   console.log("guess larger")
+  // };
 
 
 //   // var thisDev = devs[i];  // which deviation applies in this round?
@@ -457,13 +581,15 @@ for (i = 0; i < animals.length; i++) {
   var estimateB = {
     type: 'survey-text',
     questions: [
-      {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[i]}
+      {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[j]}
     ],
-    preamble: "Round " + [i + 1] + ": part B estimate<br><br>" +
+    preamble: function() {
+      return("Round " + [j + 1] + ": part B estimate<br><br>" +
       "Your part A estimate of <b>" + lastA + "</b> has been recorded.<br><br>" +
       "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
       "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
-      "Their estimate was <b>" + closest + "</b>.",
+      "Their estimate was <b>" + "closest" + "</b>.")
+      },
     on_finish:function(data) {
       // var lastEstimate = jsPsych.data.responses;
       estimatesB.push(data.responses);
@@ -472,7 +598,7 @@ for (i = 0; i < animals.length; i++) {
 
     // trial_duration: 3000
   };
-  // timeline.push(estimateB);
+  timeline.push(estimateB);
 
   // 11. flag end of round, continue next round, go back to 7, unless last round
   var endRound = {                   // 2nd informant
@@ -481,12 +607,33 @@ for (i = 0; i < animals.length; i++) {
     choices: ['Continue'],
     on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
     is_html: true,
-    stimulus: "Round completed<br><br>This is the end of round " + [i + 1] + ".<br>" +
+    stimulus: "Round completed<br><br>This is the end of round " + [j + 1] + ".<br>" +
       "Click below to continue.<br><br>"
   };
   // timeline.push(endRound);
 
 };
+
+// var estimateB = {
+//   type: 'survey-text',
+//   questions: [
+//     {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[i]}
+//   ],
+//   preamble: "Round " + [i + 1] + ": part B estimate<br><br>" +
+//     "Your part A estimate of <b>" + lastA + "</b> has been recorded.<br><br>" +
+//     "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+//     "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+//     "Their estimate was <b>" + closest + "</b>.",
+//   on_finish:function(data) {
+//     // var lastEstimate = jsPsych.data.responses;
+//     estimatesB.push(data.responses);
+//     // console.log(data.responses);
+//   },
+//
+//   // trial_duration: 3000
+// };
+// timeline.push(estimateB);
+
 
 // 12. describe earnings
 
@@ -687,7 +834,7 @@ var crts = {
     ],
     randomize_order: true
 };
-timeline.push(crts);
+// timeline.push(crts);
 
 // ----------------- finish with attention check question ---------------- //
 var attnCheck = {
