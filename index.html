@@ -25,6 +25,7 @@
 
 // initialise timeline
 var timeline = [];
+var beast = [];
 
 // // if participants get an instruction check question wrong, they will loop back to the previous instruction page
 var introloop = [];
@@ -44,12 +45,12 @@ var randRound = Math.round(Math.random() * (4-0) + 0);
 var noEstimates = 'A';
 var randEstimate = jsPsych.randomization.sampleWithoutReplacement(noEstimates, 1);
 
-if (randEstimate == 'A') {
-  var selectedEstimates = estimatesA;
-} else {
-  var selectedEstimates = estimatesB;
-};
-console.log(selectedEstimates);
+// if (randEstimate == 'A') {
+//   var selectedEstimates = estimatesA;
+// } else {
+//   var selectedEstimates = estimatesB;
+// };
+// console.log(selectedEstimates);
 
 // // specify images to preload
 // var images = ['img/closeddoor.jpg', 'img/redjar.png', 'img/bluejar.png','img/greyball.PNG',
@@ -113,8 +114,7 @@ var instructionsPreempt = {
 };
 // timeline.push(instructionsPreempt);
 
-// --------------------- //
-
+// ----------------- BEAST ------------- //
 
 // 1. welcome
 var beastImgHeight = 400;
@@ -256,9 +256,9 @@ var loop_node = {
 };
 // timeline.push(loop_node);
 
-// begin for loop for 5 rounds
+// try without a loop
+
 var animals = ['ants', 'bees', 'cranes', 'crickets', 'flamingos'];
-// var animals = jsPsych.randomization.repeat(animals, 1);
 var j;
 
 var devs = [0.25, 0.15, 0.2, 0.15, 0.25];
@@ -274,366 +274,460 @@ var peersMat = [
     [23,25,28,30,32,33,33,34,35,38,40,40,40,40,40,41,42,42,45,45,47,48,49,50,50,50,50,53,53,54,55,55,55,55,55,55,55,55,56,57,57,58,58,59,60,60,60,60,60,60,60,60,60,62,62,62,62,62,65,65,65,65,65,65,65,66,66,66,66,68,68,69,70,70,70,70,72,72,73,75,75,75,76,77,80,80,80,84,85,85,90,92,102,110,125,140]
     ];
 
-var estimatesA = [];
-var estimatesB = new Array;
-
 var lastA = 0;
-
 var closest = 0;
 
-var rounds1 = [0,1,2,3,4];
+var viewTime = 6000;
 
+var preRound1 = {                   // 7. get ready - click to see an image
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "You have answered all control questions correctly.<br>The task starts now.<br><br>" +
+    "When you click below, an image will appear showing a number of <b>" + animals[0] + "</b>.<br>" +
+    "After <b>6 seconds</b>, the image disappears.<br>" +
+    "A box will appear in which you have to estimate how many " + animals[0] + " there were.<br><br>" +
+    "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
+    "Click below when you are ready.<br><br>"
+};
+// timeline.push(preRound1);
 
-// var estimateA = {
-//   type: 'survey-text-time',
-//   questions: [{prompt: "How many " + animals[i] + " were shown in the image?",
-//               placeholder: "Number of " + animals[i],
-//               required: true}],
-//   preamble: "Round " + [i + 1] + ": part A estimate",
-//   time_limit: 5000,
-//   on_finish:function(data) {
-//     estimatesA.push(data.responses);
-//     lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-//     lastA = lastA.substr(14,2);
-//     console.log(lastA);
-//     },
-//   };
-//   // timeline.push(estimateA);
-//
-//
-//   var estimateB = {
-//     type: 'survey-text',
-//     questions: [
-//       {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[i]}
-//     ],
-//     preamble: function() {
-//       return("this was your last estimate: " + lastA);
-//     }
-//   };
+var viewImage1 = {        // 8. see image
+  type: 'image-button-response',
+  stimulus: 'img/' + animals[0] + '.jpg',
+  stimulus_height: beastImgHeight,
+  choices: ['Continue'],
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  stimulus_duration: viewTime,
+  trial_duration: viewTime,
+  response_ends_trial: false
+};
+// timeline.push(viewImage1);
 
-// timeline.push(estimateB);
+var estimateA1 = {
+  type: 'survey-text-time',
+  questions: [{prompt: "How many " + animals[0] + " were shown in the image?",
+                placeholder: "Number of " + animals[0],
+                required: true}],
+  preamble: "Round " + [0 + 1] + ": part A estimate",
+  time_limit: 5000,
+  on_finish:function(data) {
+    lastA1 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastA1 = lastA1.substr(14,3);  // capture 3-digit numbers
+    if (lastA1.slice(2) == '"') {lastA1 = lastA1.substr(0,2);}; // for 2-digit numbers
+  },
+};
+beast.push(estimateA1);
 
-for (a = 0; a < animals.length; a = a + 1) {
-  var estimateAA = {
-    type: 'survey-text-time',
-    questions: [
-      {prompt: "How many " + animals[a] + " were shown in the image?",
-      placeholder: "Number of " + animals[a],
-      required: true}
-    ],
-    preamble: "Round " + [a + 1] + ": part A estimate",
-    time_limit: 5000,
-    // time_limit: 15000,
-    on_finish:function(data) {
-      // console.log(rounds1[i]);
-      // if (i == randRound) {
-        estimatesA.push(data.responses);
-        // console.log("randomly selected round")
-      // };
-      lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-      lastA = lastA.substr(14,3);
-      if (lastA.slice(2) == '"') {
-        lastA = lastA.substr(0,2);
-      };
-      console.log(lastA);
-    },
-  };
-  timeline.push(estimateAA);
-  
- ///////////////// WORK ON THIS
-  if (lastA < correctNos[a]) {
-    // var target = lastA * (1 + thisDev);
-    console.log("smaller");
-  } else {
-    if (lastA == correctNos[a]) {
-      // if (Math.random() < 0.5) {
-      //   var target = lastA * (1 + thisDev);
-      //   }
+var estimateB1 = {
+  type: 'survey-text-time',
+  questions: [{prompt:  "You can now enter your part B estimate below.",
+                placeholder: "Number of " + animals[0],
+                required: true}],
+  preamble: function() {
+    if (lastA1 < correctNos[0]) {var target = lastA1 * (1 + devs[0]);
+      console.log("smaller");
     } else {
-      // var target = lastA * (1 - thisDev);
-      console.log("larger");
-    }
-  };
-  console.log(target);
-//////////////////////////////////////
+      if (lastA1 == correctNos[0]) {
+        if (Math.random() < 0.5) {
+          var target = lastA1 * (1 + devs[0]);
+          }
+      } else {
+        var target = lastA1 * (1 - devs[0]);
+        console.log("larger");
+      }
+    };
+    console.log(target);
 
-  // function calcTarget(lastA) {
-  //   if (lastA < correctNos[j]) {
-  //     var target = lastA * (1 + thisDev);
-  //     console.log("smaller");
-  //   } else {
-  //     if (lastA == correctNos[j]) {
-  //       if (Math.random() < 0.5) {
-  //         var target = lastA * (1 + thisDev);
-  //         }
-  //     } else {
-  //       var target = lastA * (1 - thisDev);
-  //       console.log("larger");
-  //     }
-  //   };
-  //   console.log(target);
-  // };
-  //
-  // return calcTarget(lastA);
+    closest = peersMat[0].reduce(function(prev, curr) {
+      return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+    });
 
-
-  // closest = peersMat[j].reduce(function(prev, curr) {
-  //   return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-  // });
-  // console.log(closest)
-
-}
-
-
-
-
-
-// var i = 0;
-// for (i = 0; i < 5; i++) {
-for (j = 0; j < 3; j = j + 1) {
-
-  if (j < 1) {
-    var text1 = ["You have answered all control questions correctly.<br>The task starts now.<br><br>"];
-  } else {
-    var text1 = ["A new round starts now.<br><br>"];
-  };
-
-  var preRound = {                   // 7. get ready - click to see an image
-    type: 'html-button-response',
-    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-    choices: ['Continue'],
-    on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
-    is_html: true,
-    stimulus: text1 + "When you click below, an image will appear showing a number of <b>" + animals[j] + "</b>.<br>" +
-      "After <b>6 seconds</b>, the image disappears.<br>" +
-      "A box will appear in which you have to estimate how many " + animals[j] + " there were.<br><br>" +
-      "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
-      "Click below when you are ready.<br><br>"
-  };
-  // timeline.push(preRound);
-
-    var viewImage = {        // 8. see image
-    type: 'image-button-response',
-    stimulus: 'img/' + animals[j] + '.jpg',
-    stimulus_height: beastImgHeight,
-    choices: ['Continue'],
-    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-    stimulus_duration: 6000,
-    // stimulus_duration: 2000,
-    // trial_duration: 2000,
-    trial_duration: 6000,
-    response_ends_trial: false
-  };
-  // timeline.push(viewImage);
-
-  var thisDev = devs[j];
-
-  var estimateA = {
-    type: 'survey-text-time',
-    questions: [
-      {prompt: "How many " + animals[j] + " were shown in the image?",
-      placeholder: "Number of " + animals[j],
-      required: true}
-    ],
-    preamble: "Round " + [j + 1] + ": part A estimate",
-    time_limit: 5000,
-    // time_limit: 15000,
-    on_finish:function(data) {
-      // console.log(rounds1[i]);
-      // if (i == randRound) {
-        estimatesA.push(data.responses);
-        // console.log("randomly selected round")
-      // };
-      lastA = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-      lastA = lastA.substr(14,3);
-      if (lastA.slice(2) == '"') {
-        lastA = lastA.substr(0,2);
-      };
-      console.log(lastA);
-
-      // // was participant's guess higher/lower than the correct answer?
-      // console.log(correctNos[j]);
-      // if (lastA < correctNos[j]) {
-      //   var target = lastA * (1 + thisDev);
-      // } else {
-      //   if (lastA == correctNos[j]) {
-      //     if (Math.random() < 0.5) {
-      //       var target = lastA * (1 + thisDev);
-      //       }
-      //   } else {
-      //     var target = lastA * (1 - thisDev);
-      //   }
-      // };
-      // console.log(target);
-      //
-      // closest = peersMat[j].reduce(function(prev, curr) {
-      //   return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-      // });
-      // console.log(closest)
-
+    return("Round " + [0 + 1] + ": part B estimate<br><br>" +
+    "Your part A estimate of <b>" + lastA1 + "</b> has been recorded.<br><br>" +
+    "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+    "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+    "Their estimate was <b>" + closest + "</b>.")
     },
-  };
-  // timeline.push(estimateA);
 
-  // was participant's guess higher/lower than the correct answer?
-  console.log(correctNos[j]);
-  if (lastA < correctNos[j]) {
-    var target = lastA * (1 + thisDev);
-  } else {
-    if (lastA == correctNos[j]) {
-      if (Math.random() < 0.5) {
-        var target = lastA * (1 + thisDev);
-        }
+  on_finish:function(data) {
+    lastB1 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastB1 = lastB1.substr(14,3);  // capture 3-digit numbers
+    if (lastB1.slice(2) == '"') {lastB1 = lastB1.substr(0,2);}; // for 2-digit numbers
+  },
+  // time_limit: xx
+};
+beast.push(estimateB1);
+
+// 11. flag end of round, continue next round, go back to 7, unless last round
+var endRound1 = {                   // 2nd informant
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "Round completed<br><br>This is the end of round " + [0 + 1] + ".<br>" +
+    "Click below to continue.<br><br>"
+};
+// beast.push(endRound1);
+
+var preRound2 = {                   // 7. get ready - click to see an image
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "A new round starts now.<br><br>" +
+    "When you click below, an image will appear showing a number of <b>" + animals[1] + "</b>.<br>" +
+    "After <b>6 seconds</b>, the image disappears.<br>" +
+    "A box will appear in which you have to estimate how many " + animals[1] + " there were.<br><br>" +
+    "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
+    "Click below when you are ready.<br><br>"
+};
+// beast.push(preRound2);
+
+var viewImage2 = {        // 8. see image
+  type: 'image-button-response',
+  stimulus: 'img/' + animals[1] + '.jpg',
+  stimulus_height: beastImgHeight,
+  choices: ['Continue'],
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  stimulus_duration: viewTime,
+  trial_duration: viewTime,
+  response_ends_trial: false
+};
+// beast.push(viewImage2);
+
+var estimateA2 = {
+  type: 'survey-text-time',
+  questions: [{prompt: "How many " + animals[1] + " were shown in the image?",
+                placeholder: "Number of " + animals[1],
+                required: true}],
+  preamble: "Round " + [1 + 1] + ": part A estimate",
+  time_limit: 5000,
+  on_finish:function(data) {
+    lastA2 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastA2 = lastA2.substr(14,3);  // capture 3-digit numbers
+    if (lastA2.slice(2) == '"') {lastA2 = lastA2.substr(0,2);}; // for 2-digit numbers
+  },
+};
+beast.push(estimateA2);
+
+var estimateB2 = {
+  type: 'survey-text-time',
+  questions: [{prompt:  "You can now enter your part B estimate below.",
+                placeholder: "Number of " + animals[1],
+                required: true}],
+  preamble: function() {
+    if (lastA2 < correctNos[1]) {
+      var target = lastA2 * (1 + devs[1]);
     } else {
-      var target = lastA * (1 - thisDev);
-    }
-  };
-  console.log(target);
+      if (lastA2 == correctNos[1]) {
+        if (Math.random() < 0.5) {
+          var target = lastA2 * (1 + devs[1]);
+          }
+      } else {
+        var target = lastA2 * (1 - devs[1]);
+      }
+    };
 
-  closest = peersMat[j].reduce(function(prev, curr) {
-    return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-  });
-  console.log(closest);
+    closest = peersMat[1].reduce(function(prev, curr) {
+      return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+    });
 
-
-
-  var estimateA2 = {
-    type: 'survey-text-time',
-    questions: [
-      {prompt: "How many " + animals[j] + " were shown in the image?",
-      placeholder: "Number of " + animals[j],
-      required: true}
-    ],
-    preamble: "Round " + [j + 1] + ": part A estimate",
-    time_limit: 5000,
-    // time_limit: 15000,
-    on_finish:function(data) {
-      // console.log(rounds1[i]);
-      // if (i == randRound) {
-        // estimatesA.push(data.responses);
-        // console.log("NOT randomly selected round")
-      // };
-      // return showLastEstimate();
-      // console.log(data.responses);
-    },
-  };
-
-    // if (i == randRound) {
-      timeline.push(estimateA)
-    // } else {
-    //   timeline.push(estimateA2)
-    // };
-
-
-  // timeline.push(estimateA);
-
-  // var lasttrialdata = jsPsych.data.getLastTrialData();
-  // var lastEstimate = jsPsych.data.get().last(1).select('responses').values;
-
-// show peer estimate
-
-  // 9. provide estimate
-
-  // var lastAA = '999';
-  //   var myfunc = function(stringA) {
-  //     lastAA = stringA.substring(14,16)
-  //     console.log(lastAA);
-  //   };
-  //
-  //   var trial = {
-  //     type: 'call-function',
-  //     func: myfunc(lastA)
-  //   };
-  //   timeline.push(trial);
-
-  // var lastA = "12345678911234567".substr(14,16);
-
-  // if (lastA < correctNos[i]) {
-  //   console.log("guess smaller than correct")
-  // } else {
-  //   console.log("guess larger")
-  // };
-
-
-//   // var thisDev = devs[i];  // which deviation applies in this round?
-//   var firstGuess = 70;
-//
-//
-//   // was participant's guess higher/lower than the correct answer?
-//   if (firstGuess < correctNos[i]) {
-//     var target = firstGuess * (1 + thisDev);
-//   } else {
-//     if (firstGuess == correctNos[i]) {
-//       if (Math.random() < 0.5) {
-//         var target = firstGuess * (1 + thisDev);
-//         }
-//     } else {
-//       var target = firstGuess * (1 - thisDev);
-//     }
-//   };
-//
-// var closest = peersMat[i].reduce(function(prev, curr) {
-//     return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-//   });
-//   console.log(closest)
-
-  // 10. revise - using previous estimates
-  var estimateB = {
-    type: 'survey-text',
-    questions: [
-      {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[j]}
-    ],
-    preamble: function() {
-      return("Round " + [j + 1] + ": part B estimate<br><br>" +
-      "Your part A estimate of <b>" + lastA + "</b> has been recorded.<br><br>" +
-      "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
-      "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
-      "Their estimate was <b>" + "closest" + "</b>.")
-      },
-    on_finish:function(data) {
-      // var lastEstimate = jsPsych.data.responses;
-      estimatesB.push(data.responses);
-      // console.log(data.responses);
+    return("Round " + [1 + 1] + ": part B estimate<br><br>" +
+    "Your part A estimate of <b>" + lastA2 + "</b> has been recorded.<br><br>" +
+    "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+    "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+    "Their estimate was <b>" + closest + "</b>.")
     },
 
-    // trial_duration: 3000
-  };
-  timeline.push(estimateB);
+  on_finish:function(data) {
+    lastB2 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastB2 = lastB2.substr(14,3);  // capture 3-digit numbers
+    if (lastB2.slice(2) == '"') {lastB2 = lastB2.substr(0,2);}; // for 2-digit numbers
+  },
+  // time_limit: xx
+};
+beast.push(estimateB2);
 
-  // 11. flag end of round, continue next round, go back to 7, unless last round
-  var endRound = {                   // 2nd informant
-    type: 'html-button-response',
-    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-    choices: ['Continue'],
-    on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
-    is_html: true,
-    stimulus: "Round completed<br><br>This is the end of round " + [j + 1] + ".<br>" +
-      "Click below to continue.<br><br>"
-  };
-  // timeline.push(endRound);
+var endRound2 = {                   // 2nd informant
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "Round completed<br><br>This is the end of round " + [1 + 1] + ".<br>" +
+    "Click below to continue.<br><br>"
+};
+// timeline.push(endRound2);
 
+var preRound3 = {                   // 7. get ready - click to see an image
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "A new round starts now.<br><br>" +
+    "When you click below, an image will appear showing a number of <b>" + animals[2] + "</b>.<br>" +
+    "After <b>6 seconds</b>, the image disappears.<br>" +
+    "A box will appear in which you have to estimate how many " + animals[2] + " there were.<br><br>" +
+    "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
+    "Click below when you are ready.<br><br>"
+};
+// beast.push(preRound3);
+
+var viewImage3 = {        // 8. see image
+  type: 'image-button-response',
+  stimulus: 'img/' + animals[2] + '.jpg',
+  stimulus_height: beastImgHeight,
+  choices: ['Continue'],
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  stimulus_duration: viewTime,
+  trial_duration: viewTime,
+  response_ends_trial: false
+};
+// beast.push(viewImage3);
+
+var estimateA3 = {
+  type: 'survey-text-time',
+  questions: [{prompt: "How many " + animals[2] + " were shown in the image?",
+                placeholder: "Number of " + animals[2],
+                required: true}],
+  preamble: "Round " + [2 + 1] + ": part A estimate",
+  time_limit: 5000,
+  on_finish:function(data) {
+    lastA3 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastA3 = lastA3.substr(14,3);  // capture 3-digit numbers
+    if (lastA3.slice(2) == '"') {lastA3 = lastA3.substr(0,2);}; // for 2-digit numbers
+  },
+};
+beast.push(estimateA3);
+
+var estimateB3 = {
+  type: 'survey-text-time',
+  questions: [{prompt:  "You can now enter your part B estimate below.",
+                placeholder: "Number of " + animals[2],
+                required: true}],
+  preamble: function() {
+    if (lastA3 < correctNos[2]) {
+      var target = lastA3 * (1 + devs[2]);
+    } else {
+      if (lastA3 == correctNos[2]) {
+        if (Math.random() < 0.5) {
+          var target = lastA3 * (1 + devs[2]);
+          }
+      } else {
+        var target = lastA3 * (1 - devs[2]);
+      }
+    };
+
+    closest = peersMat[2].reduce(function(prev, curr) {
+      return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+    });
+
+    return("Round " + [2 + 1] + ": part B estimate<br><br>" +
+    "Your part A estimate of <b>" + lastA3 + "</b> has been recorded.<br><br>" +
+    "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+    "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+    "Their estimate was <b>" + closest + "</b>.")
+    },
+
+  on_finish:function(data) {
+    lastB3 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastB3 = lastB3.substr(14,3);  // capture 3-digit numbers
+    if (lastB3.slice(2) == '"') {lastB3 = lastB3.substr(0,2);}; // for 2-digit numbers
+  },
+  // time_limit: xx
+};
+beast.push(estimateB3);
+
+var endRound3 = {                   // 2nd informant
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "Round completed<br><br>This is the end of round " + [2 + 1] + ".<br>" +
+    "Click below to continue.<br><br>"
 };
 
-// var estimateB = {
-//   type: 'survey-text',
-//   questions: [
-//     {prompt:  "You can now enter your part B estimate below.", placeholder: "Number of " + animals[i]}
-//   ],
-//   preamble: "Round " + [i + 1] + ": part B estimate<br><br>" +
-//     "Your part A estimate of <b>" + lastA + "</b> has been recorded.<br><br>" +
-//     "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
-//     "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
-//     "Their estimate was <b>" + closest + "</b>.",
-//   on_finish:function(data) {
-//     // var lastEstimate = jsPsych.data.responses;
-//     estimatesB.push(data.responses);
-//     // console.log(data.responses);
-//   },
-//
-//   // trial_duration: 3000
-// };
-// timeline.push(estimateB);
+// beast.push(endRound1);
+var preRound4 = {                   // 7. get ready - click to see an image
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "A new round starts now.<br><br>" +
+    "When you click below, an image will appear showing a number of <b>" + animals[3] + "</b>.<br>" +
+    "After <b>6 seconds</b>, the image disappears.<br>" +
+    "A box will appear in which you have to estimate how many " + animals[3] + " there were.<br><br>" +
+    "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
+    "Click below when you are ready.<br><br>"
+};
+// beast.push(preRound4);
 
+var viewImage4 = {        // 8. see image
+  type: 'image-button-response',
+  stimulus: 'img/' + animals[3] + '.jpg',
+  stimulus_height: beastImgHeight,
+  choices: ['Continue'],
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  stimulus_duration: viewTime,
+  trial_duration: viewTime,
+  response_ends_trial: false
+};
+// beast.push(viewImage4);
+
+var estimateA4 = {
+  type: 'survey-text-time',
+  questions: [{prompt: "How many " + animals[3] + " were shown in the image?",
+                placeholder: "Number of " + animals[3],
+                required: true}],
+  preamble: "Round " + [3 + 1] + ": part A estimate",
+  time_limit: 5000,
+  on_finish:function(data) {
+    lastA4 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastA4 = lastA4.substr(14,3);  // capture 3-digit numbers
+    if (lastA4.slice(2) == '"') {lastA4 = lastA4.substr(0,2);}; // for 2-digit numbers
+  },
+};
+beast.push(estimateA4);
+
+var estimateB4 = {
+  type: 'survey-text-time',
+  questions: [{prompt:  "You can now enter your part B estimate below.",
+                placeholder: "Number of " + animals[3],
+                required: true}],
+  preamble: function() {
+    if (lastA4 < correctNos[3]) {
+      var target = lastA4 * (1 + devs[3]);
+    } else {
+      if (lastA4 == correctNos[3]) {
+        if (Math.random() < 0.5) {
+          var target = lastA4 * (1 + devs[3]);
+          }
+      } else {
+        var target = lastA4 * (1 - devs[3]);
+      }
+    };
+    closest = peersMat[3].reduce(function(prev, curr) {
+      return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+    });
+
+    return("Round " + [3 + 1] + ": part B estimate<br><br>" +
+    "Your part A estimate of <b>" + lastA4 + "</b> has been recorded.<br><br>" +
+    "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+    "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+    "Their estimate was <b>" + closest + "</b>.")
+    },
+
+  on_finish:function(data) {
+    lastB4 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastB4 = lastB4.substr(14,3);  // capture 3-digit numbers
+    if (lastB4.slice(2) == '"') {lastB4 = lastB4.substr(0,2);}; // for 2-digit numbers
+  },
+  // time_limit: xx
+};
+beast.push(estimateB4);
+
+var endRound4 = {                   // 2nd informant
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "Round completed<br><br>This is the end of round " + [3 + 1] + ".<br>" +
+    "Click below to continue.<br><br>"
+};
+// beast.push(endRound1);
+
+var preRound5 = {                   // 7. get ready - click to see an image
+  type: 'html-button-response',
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  choices: ['Continue'],
+  on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
+  is_html: true,
+  stimulus: "A new round starts now.<br><br>" +
+    "When you click below, an image will appear showing a number of <b>" + animals[4] + "</b>.<br>" +
+    "After <b>6 seconds</b>, the image disappears.<br>" +
+    "A box will appear in which you have to estimate how many " + animals[4] + " there were.<br><br>" +
+    "You have to enter your estimate <b>within 15 seconds</b>.<br><br>" +
+    "Click below when you are ready.<br><br>"
+};
+// beast.push(preRound5);
+
+var viewImage5 = {        // 8. see image
+  type: 'image-button-response',
+  stimulus: 'img/' + animals[4] + '.jpg',
+  stimulus_height: beastImgHeight,
+  choices: ['Continue'],
+  button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+  stimulus_duration: viewTime,
+  trial_duration: viewTime,
+  response_ends_trial: false
+};
+// beast.push(viewImage5);
+
+var estimateA5 = {
+  type: 'survey-text-time',
+  questions: [{prompt: "How many " + animals[4] + " were shown in the image?",
+                placeholder: "Number of " + animals[4],
+                required: true}],
+  preamble: "Round " + [4 + 1] + ": part A estimate",
+  time_limit: 5000,
+  on_finish:function(data) {
+    lastA5 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastA5 = lastA5.substr(14,3);  // capture 3-digit numbers
+    if (lastA5.slice(2) == '"') {lastA5 = lastA5.substr(0,2);}; // for 2-digit numbers
+  },
+};
+beast.push(estimateA5);
+
+var estimateB5 = {
+  type: 'survey-text-time',
+  questions: [{prompt:  "You can now enter your part B estimate below.",
+                placeholder: "Number of " + animals[4],
+                required: true}],
+  preamble: function() {
+    if (lastA5 < correctNos[4]) {
+      var target = lastA5 * (1 + devs[4]);
+    } else {
+      if (lastA5 == correctNos[4]) {
+        if (Math.random() < 0.5) {
+          var target = lastA5 * (1 + devs[4]);
+          }
+      } else {
+        var target = lastA5 * (1 - devs[4]);
+      }
+    };
+    closest = peersMat[4].reduce(function(prev, curr) {
+      return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+    });
+
+    return("Round " + [4 + 1] + ": part B estimate<br><br>" +
+    "Your part A estimate of <b>" + lastA5 + "</b> has been recorded.<br><br>" +
+    "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
+    "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
+    "Their estimate was <b>" + closest + "</b>.")
+    },
+
+  on_finish:function(data) {
+    lastB5 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
+    lastB5 = lastB5.substr(14,3);  // capture 3-digit numbers
+    if (lastB5.slice(2) == '"') {lastB5 = lastB5.substr(0,2);}; // for 2-digit numbers
+  },
+  // time_limit: xx
+};
+beast.push(estimateB5);
+
+var beastTimeline = {
+  timeline: beast,
+};
+timeline.push(beastTimeline);
 
 // 12. describe earnings
 
