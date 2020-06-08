@@ -41,8 +41,7 @@ var filename = "urns-expt13" + pid + "_turkcode_" + turkcode;
 var randRound = Math.round(Math.random() * (4-0) + 0);
 
 // 2. randomly select estimate A or B
-// var noEstimates = ['A', 'B'];
-var noEstimates = 'A';
+var noEstimates = ['A', 'B'];
 var randEstimate = jsPsych.randomization.sampleWithoutReplacement(noEstimates, 1);
 
 // if (randEstimate == 'A') {
@@ -71,7 +70,9 @@ function saveData(name, data){
 function startExperiment(){
 
   jsPsych.data.addProperties({  // record these variables in the jsPsych data
-    turkcode: turkcode
+    turkcode: turkcode,
+    randRound: randRound,
+    randEstimate: randEstimate
 
   });
 
@@ -724,22 +725,7 @@ var estimateB5 = {
 };
 beast.push(estimateB5);
 
-var beastTimeline = {
-  timeline: beast,
-};
-timeline.push(beastTimeline);
-
 // 12. describe earnings
-
-//
-// function getEstimate(round, ests) {
-//   var sel = ests[round];
-//   return(sel);
-// };
-//
-// var xx = getEstimate(randRound, selectedEstimates);
-// console.log(xx)
-
 var selectedEstimate = [];
 // var xx = Object.assign({}, selectedEstimates);
 // var selectedEstimate = xx[randRound];
@@ -749,22 +735,7 @@ var selectedEstimate = [];
 
 // console.log(selectedEstimate);
 
-var thisCorr = correctNos[randRound];
-// console.log(thisCorr);
 
-var deviation = Math.abs(selectedEstimate - thisCorr);
-// console.log(deviation);
-var subtraction = Math.min(100, 5*deviation);
-// console.log(subtraction);
-
-var points = Math.max(100 - deviation*5, 0);
-// console.log(points);
-
-var subtractionT = ["As a consequence, we subtract " + deviation + " x 5 = " + subtraction + " Points."];
-if (deviation > 20) {
-  var subtractionT = ["As a consequence, we would have subtracted " + deviation + " x 5 Points.<br>" +
-    "However, as stated in the instructions, your number of Points cannot become negative, so we subtract 100 Points."]
-};
 
 var earnings = {                   // 2nd informant
   type: 'html-button-response',
@@ -772,16 +743,83 @@ var earnings = {                   // 2nd informant
   choices: ['Continue'],
   on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
   is_html: true,
-  stimulus: "Your earnings<br><br>Your earnings are calculated as follows.<br><br>" +
+  stimulus: function() {
+
+    switch (randRound) {
+      case 0:
+        if (randEstimate == "A") {
+          var selectedEstimate = lastA1;
+        } else {
+          var selectedEstimate = lastB1;
+        }
+        break;
+      case 1:
+        if (randEstimate == "A") {
+          var selectedEstimate = lastA2;
+        } else {
+          var selectedEstimate = lastB2;
+        }
+        break;
+      case 2:
+        if (randEstimate == "A") {
+          var selectedEstimate = lastA3;
+        } else {
+          var selectedEstimate = lastB3;
+        }
+        break;
+      case 3:
+        if (randEstimate == "A") {
+          var selectedEstimate = lastA4;
+        } else {
+          var selectedEstimate = lastB4;
+        }
+        break;
+      case 4:
+        if (randEstimate == "A") {
+          var selectedEstimate = lastA5;
+        } else {
+          var selectedEstimate = lastB5;
+        }
+        break;
+      default:
+        var selectedEstimate = "didn't work";
+    };
+
+    var thisCorr = correctNos[randRound];
+    // console.log(thisCorr);
+
+    var deviation = Math.abs(selectedEstimate - thisCorr);
+    // console.log(deviation);
+    var subtraction = Math.min(100, 5*deviation);
+    // console.log(subtraction);
+
+    var points = Math.max(100 - deviation*5, 0);
+    // console.log(points);
+
+    var subtractionT = ["As a consequence, we subtract " + deviation + " x 5 = " + subtraction + " Points."];
+    if (deviation > 20) {
+      var subtractionT = ["As a consequence, we would have subtracted " + deviation + " x 5 Points.<br>" +
+        "However, as stated in the instructions, your number of Points cannot become negative, so we subtract 100 Points."]
+    };
+
+
+    return("Your earnings<br><br>Your earnings are calculated as follows.<br><br>" +
     "The computer randomly selected round <b>" + [randRound + 1] + "</b>.<br>" +
     "Then, the computer randomly selected <b>part " + randEstimate + "</b>.<br><br>" +
     "In that case, you estimated how many <b>" + animals[randRound] + "</b> there were in the image.<br>" +
     "Your estimate in that case was <b>" + selectedEstimate + "</b>.<br>" +
     "The actual number of " + animals[randRound] + " in the image was <b>" + thisCorr + "</b>.<br><br>" +
     "This means that your estimate was <b>" + deviation + "</b> off the actual number.<br>" +
-    subtractionT + "<br><br>This means that your earnings from this task are 100 - " + subtraction + " = <b>" + points + " Points</b>.<br><br>"
+    subtractionT + "<br><br>This means that your bonus earnings from this task are 100 - " + subtraction + " = <b>" + points + " Points</b>.<br><br>")
+    }
 };
-// timeline.push(earnings);
+beast.push(earnings);
+
+
+var beastTimeline = {
+  timeline: beast,
+};
+timeline.push(beastTimeline);
 
 // -------------------- NUMERACY ITEMS ---------------------------------- //
 // var numInsts = {
