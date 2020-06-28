@@ -69,9 +69,9 @@ function startExperiment(){
   jsPsych.init({
     timeline: timeline,
     // preload_images: images,
-    // on_trial_finish: function(data){saveData(filename, jsPsych.data.get().csv())},  // use for UNSW server - uncomment to locally save data file as csv
+    on_trial_finish: function(data){saveData(filename, jsPsych.data.get().csv())},  // use for UNSW server - uncomment to locally save data file as csv
     on_finish: function() {
-      jsPsych.data.displayData('csv');
+      // jsPsych.data.displayData('csv');
       endExperiment( jsPsych.data.get().csv(), function() { document.write('<div id="endscreen" class="endscreen" style="width:1000px"><div class="endscreen" style="text-align:center; border:0px solid; padding:10px; font-size:120%; width:800px; float:right"><p><br><br><br>All done!<br><br>Your completion code is <span id="turkcode" style="font-weight:bold;font-size:130%">' + turkcode + '</span>. To receive payment for the HIT, return to the Amazon Mechanical Turk page and enter this code. Please contact us if something goes wrong and we\'ll fix it as quickly as possible.</p></div></div>') })
     }
   });
@@ -91,8 +91,7 @@ function setDisplay(theClass, theValue) {
  }
 };
 
-// -------------------------- INSTRUCTIONS ----------------------------- //
-
+// ------------ INITIAL INSTRUCTIONS ------------------------- //
 var instructionsPreempt = {
   type: 'html-button-response',
   timing_post_trial: 0,
@@ -100,15 +99,17 @@ var instructionsPreempt = {
   choices: ['Click here to begin'],
   on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 70)},
   is_html: true,
-  stimulus: "The experiment will begin now.<br><br>The first few pages will show the instructions.<br>Make sure to read them carefully, as you will be asked questions to check that you understand them." +
-  "<br><br>If you answer a question incorrectly, you will be taken back to the instructions page.<br><br>"
+  stimulus: "The experiment will begin now.<br>This experiment consists of two tasks.<br><br>" +
+    "The first task involves estimating how many objects are in an image.<br><br>" +
+    "The second task is a series of numeracy questions.<br><br>" +
+    "You will begin the first task now."
 };
-// timeline.push(instructionsPreempt);
+timeline.push(instructionsPreempt);
 
 // ----------------- BEAST ------------- //
-var animals = ['ants', 'bees', 'cranes', 'crickets', 'flamingos'];
-var correctNos = [93, 78, 59, 74, 69];
-var devs = [0.25, 0.15, 0.2, 0.15, 0.25];
+var animals = ['ants', 'bees', 'cranes', 'crickets', 'flamingos'];  // specify animal names to reference images
+var correctNos = [93, 78, 59, 74, 69];                              // the actual number of animals in each image
+var devs = [0.25, 0.15, 0.2, 0.15, 0.25];                           // delta value differs in each round
 var peersMat = [ // estimates from previous session (without social information)
     [20,24,25,30,33,35,35,38,40,42,43,45,45,46,48,50,50,50,50,52,55,55,56,56,57,60,60,60,60,62,64,64,64,65,65,65,65,67,67,69,69,70,70,70,70,70,70,70,70,70,72,72,72,74,75,75,75,75,75,75,75,75,76,78,80,80,80,80,80,80,80,84,85,85,85,85,85,86,89,89,90,90,95,98,100,100,100,120,120,120,120,120,125,126,130,155],
     [28,30,30,30,30,35,37,40,40,41,44,45,47,49,50,50,52,53,55,56,56,56,58,58,59,60,60,60,60,60,60,60,62,62,62,62,63,63,65,65,65,65,65,68,68,68,70,70,70,70,70,70,70,72,72,74,75,75,75,77,77,77,78,80,80,80,80,80,80,80,80,80,84,84,85,85,85,85,88,90,90,90,90,90,91,98,100,100,100,100,103,103,110,110,110,145],
@@ -117,15 +118,15 @@ var peersMat = [ // estimates from previous session (without social information)
     [23,25,28,30,32,33,33,34,35,38,40,40,40,40,40,41,42,42,45,45,47,48,49,50,50,50,50,53,53,54,55,55,55,55,55,55,55,55,56,57,57,58,58,59,60,60,60,60,60,60,60,60,60,62,62,62,62,62,65,65,65,65,65,65,65,66,66,66,66,68,68,69,70,70,70,70,72,72,73,75,75,75,76,77,80,80,80,84,85,85,90,92,102,110,125,140]
     ];
 
-var beastImgHeight = 400;
-var viewTime = 6000;
-var timeA = 15000;
-var timeB = 45000;
+var beastImgHeight = 400;   // height of animal image in pixels
+var viewTime = 6000;        // each image is presented for 6s
+var timeA = 15000;          // participant has 15s to respond in Round A
+var timeB = 45000;          // participant has 45s to respond in Round B
 
 // 1. welcome
 var beastWelcome = {
   type: 'survey-text',
-  questions: [{prompt: "In this HIT we ask you to complete a short task.<br>" +
+  questions: [{prompt: //"In this HIT we ask you to complete a short task.<br>" +
     "During this task, you can earn Points. The number of Points you earn will depend on your responses.<br><br>" +
     "At the end of this HIT, your Points will be converted into your bonus (<b>100 Points = $1.00</b>).<br>" +
     "Your bonus will be paid on top of your guaranteed participation fee of <b>" + "mturk fee here" + "</b>.<br>" +
@@ -221,9 +222,9 @@ var beastInsts3 = {
 introloop.push(beastInsts3);
 
 // 6. instructions check questions x 3
-var instructAnswers = ["Correct", "Incorrect"];
+var instructAnswers = ["Correct", "Incorrect"];   // 2 response choices for each question
 var correctString1 = '{"estimate":"' + instructAnswers[0] + '","second":"' + instructAnswers[0] + '","points":"' + instructAnswers[0] + '"}'; // important that there are no spaces in this string
-var instruct1Correct = false;
+var instruct1Correct = false;                     // by default, responses are 'wrong'
 
 var instructQ1Check = {
   type: "survey-multi-choice",
@@ -273,8 +274,8 @@ var loop_node = {
 };
 beast.push(loop_node);
 
-// cycle through the rounds without a loop :(
-// couldn't get the loop to successfully extract correct peer estimate
+// cycle through the rounds without a loop :( couldn't get the loop to successfully extract correct peer estimate
+// ROUND 1
 var preRound1 = {            // 7. get ready - click to see an image
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -309,9 +310,9 @@ var estimateA1 = {
                 required: true}],
   preamble: "Round " + [0 + 1] + ": part A estimate",
   time_limit: 30000,
-  on_finish:function(data) {
+  on_finish:function(data) { // save the participant's Part A estimate
     lastA1 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-    lastA1 = lastA1.substr(14,3);  // capture 3-digit numbers
+    lastA1 = lastA1.substr(14,3);                              // capture 3-digit numbers
     if (lastA1.slice(2) == '"') {lastA1 = lastA1.substr(0,2);}; // for 2-digit numbers
   },
 };
@@ -333,32 +334,33 @@ var estimateB1 = {
   questions: [{prompt:  "You can now enter your part B estimate below.",
                 placeholder: "Number of " + animals[0],
                 required: true}],
-  preamble: function() {
-    if (lastA1 < correctNos[0]) {var target = lastA1 * (1 + devs[0]);
+  preamble: function() { // the content of the preamble is determined after running this function
+    if (lastA1 < correctNos[0]) {              // if participant's guess was smaller than correct value
+      var target = lastA1 * (1 + devs[0]);     // target peer estimate is greater than participant's guess
     } else {
-      if (lastA1 == correctNos[0]) {
-        if (Math.random() < 0.5) {
-          var target = lastA1 * (1 + devs[0]);
+      if (lastA1 == correctNos[0]) {          // if participant's guess was correct
+        if (Math.random() < 0.5) {            // then randomly select a target value
+          var target = lastA1 * (1 + devs[0]);// greater than participant's guess
           }
       } else {
-        var target = lastA1 * (1 - devs[0]);
+        var target = lastA1 * (1 - devs[0]);  // or target peer estimate is smaller than participant's guess
       }
     };
 
-    closest = peersMat[0].reduce(function(prev, curr) {
+    closest = peersMat[0].reduce(function(prev, curr) { // look in the peers matrix
       return(Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
-    });
+    }); // find the peer estimate that is closest to the target estimate
 
-    return("Round " + [0 + 1] + ": part B estimate<br><br>" +
+    return("Round " + [0 + 1] + ": part B estimate<br><br>" + // this is the text for the preamble
     "Your part A estimate of <b>" + lastA1 + "</b> has been recorded.<br><br>" +
     "Now, we show you the part A estimate of an MTurker who completed this task before.<br>" +
     "This previous MTurker saw the same image as you just did. They also saw it for 6 seconds.<br><br>" +
     "Their estimate was <b>" + closest + "</b>.")
     },
 
-  on_finish:function(data) {
+  on_finish:function(data) { // save the participant's Part B estimate
     lastB1 = jsPsych.data.get().last(1).values()[0].responses; // don't include "var" if want to access this variable outside function
-    lastB1 = lastB1.substr(14,3);  // capture 3-digit numbers
+    lastB1 = lastB1.substr(14,3);                              // capture 3-digit numbers
     if (lastB1.slice(2) == '"') {lastB1 = lastB1.substr(0,2);}; // for 2-digit numbers
   },
   time_limit: timeB
@@ -366,7 +368,7 @@ var estimateB1 = {
 beast.push(estimateB1);
 
 // 11. flag end of round, continue next round, go back to 7, unless last round
-var endRound1 = {                   // 2nd informant
+var endRound1 = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   choices: ['Continue'],
@@ -377,6 +379,7 @@ var endRound1 = {                   // 2nd informant
 };
 beast.push(endRound1);
 
+// ROUND 2
 var preRound2 = {                   // 7. get ready - click to see an image
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -459,7 +462,7 @@ var estimateB2 = {
 };
 beast.push(estimateB2);
 
-var endRound2 = {                   // 2nd informant
+var endRound2 = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   choices: ['Continue'],
@@ -470,6 +473,7 @@ var endRound2 = {                   // 2nd informant
 };
 beast.push(endRound2);
 
+// ROUND 3
 var preRound3 = {                   // 7. get ready - click to see an image
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -552,7 +556,7 @@ var estimateB3 = {
 };
 beast.push(estimateB3);
 
-var endRound3 = {                   // 2nd informant
+var endRound3 = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   choices: ['Continue'],
@@ -563,6 +567,7 @@ var endRound3 = {                   // 2nd informant
 };
 beast.push(endRound3);
 
+// ROUND 4
 var preRound4 = {                   // 7. get ready - click to see an image
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -644,7 +649,7 @@ var estimateB4 = {
 };
 beast.push(estimateB4);
 
-var endRound4 = {                   // 2nd informant
+var endRound4 = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   choices: ['Continue'],
@@ -655,6 +660,7 @@ var endRound4 = {                   // 2nd informant
 };
 beast.push(endRound4);
 
+// ROUND 5
 var preRound5 = {                   // 7. get ready - click to see an image
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -739,18 +745,18 @@ beast.push(estimateB5);
 // 12. describe earnings
 var selectedEstimate = [];
 
-var earnings = {                   // 2nd informant
+var earnings = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   choices: ['Continue'],
   on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 60)},
   is_html: true,
-  stimulus: function() {
+  stimulus: function() { // function to determine text on this page
 
-    switch (randRound) {
+    switch (randRound) { // which round has been randomly selected?
       case 0:
-        if (randEstimate == "A") {
-          var selectedEstimate = lastA1;
+        if (randEstimate == "A") { // was Part A or Part B randomly selected?
+          var selectedEstimate = lastA1; // get the randomly-selected estimate
         } else {
           var selectedEstimate = lastB1;
         }
@@ -787,11 +793,11 @@ var earnings = {                   // 2nd informant
         var selectedEstimate = "didn't work";
     };
 
-    var thisCorr = correctNos[randRound];
+    var thisCorr = correctNos[randRound]; // correct estimate for randomly-selected round
 
-    var deviation = Math.abs(selectedEstimate - thisCorr);
-    var subtraction = Math.min(100, 5*deviation);
-    var points = Math.max(100 - deviation*5, 0);
+    var deviation = Math.abs(selectedEstimate - thisCorr); // deviation of participant's guess from correct
+    var subtraction = Math.min(100, 5*deviation);          // subtract deviation*5, or maximum of 100 points
+    var points = Math.max(100 - deviation*5, 0);           // remaining point total after subtraction
 
     var subtractionT = ["As a consequence, we subtract " + deviation + " x 5 = " + subtraction + " Points."];
     if (deviation > 20) {
@@ -799,8 +805,7 @@ var earnings = {                   // 2nd informant
         "However, as stated in the instructions, your number of Points cannot become negative, so we subtract 100 Points."]
     };
 
-
-    return("Your earnings<br><br>Your earnings are calculated as follows.<br><br>" +
+    return("Your earnings<br><br>Your earnings are calculated as follows.<br><br>" +  // create text
     "The computer randomly selected round <b>" + [randRound + 1] + "</b>.<br>" +
     "Then, the computer randomly selected <b>part " + randEstimate + "</b>.<br><br>" +
     "In that case, you estimated how many <b>" + animals[randRound] + "</b> there were in the image.<br>" +
@@ -818,18 +823,6 @@ var beastTimeline = {
 timeline.push(beastTimeline);
 
 // -------------------- NUMERACY ITEMS ---------------------------------- //
-// var numInsts = {
-//   type: 'html-button-response',
-//   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-//   choices: ['Click here to continue'],
-//   on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 3000)},
-//   is_html: true,
-//   stimulus: "Next, you will answer 7 short numeracy questions.<br><br>" +
-//     "You may use pen and paper if you want, but please do NOT use a calculator.<br><br>" +
-      // "Do not use a calculator but feel free to use pen and paper."
-// };
-// timeline.push(numInsts);
-
 var numeracyInstructions = {
   type: 'html-button-response',
   button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
@@ -840,7 +833,7 @@ var numeracyInstructions = {
     "Try to answer as many as you can. There is no time limit.<br>" +
     "Do not use a calculator, but you can use pen and paper to work things out.<br><br>"
 };
-// timeline.push(numeracyInstructions);
+timeline.push(numeracyInstructions);
 
 // 3 items from Schwartz, Woloshin, Black, & Welch (1997)
 var schwartz_coin = {    // correct answer = 500
@@ -851,7 +844,7 @@ var schwartz_coin = {    // correct answer = 500
     placeholder: "_____ times out of 1,000",
     required: true}]
 };
-// timeline.push(schwartz_coin);
+timeline.push(schwartz_coin);
 
 var schwartz_bigbucks = {    // correct answer = 10
   type: 'survey-text',
@@ -862,7 +855,7 @@ var schwartz_bigbucks = {    // correct answer = 10
     placeholder: "_____ people out of 1,000",
     required: true}]
 };
-// timeline.push(schwartz_bigbucks);
+timeline.push(schwartz_bigbucks);
 
 var schwartz_car = {    // correct answer = 0.1%
   type: 'survey-text',
@@ -872,7 +865,7 @@ var schwartz_car = {    // correct answer = 0.1%
     placeholder: "_____ %",
     required: true}]
 };
-// timeline.push(schwartz_car);
+timeline.push(schwartz_car);
 
 // 4 items from Berlin Numeracy Test (Cokely, Galesic, Schulz, Ghazal, & Garcia-Retamero (2012))
 var bnt_5die = {      // correct answer = 30/50 throws
@@ -883,7 +876,7 @@ var bnt_5die = {      // correct answer = 30/50 throws
     placeholder: "_____ out of 50 throws",
     required: true}]
 };
-// timeline.push(bnt_5die);
+timeline.push(bnt_5die);
 
 var bnt_choir = {      // correct answer = 25%
   type: 'survey-text',
@@ -895,7 +888,7 @@ var bnt_choir = {      // correct answer = 25%
     placeholder: "Please indicate the probability in percent _____ %",
     required: true}]
 };
-// timeline.push(bnt_choir);
+timeline.push(bnt_choir);
 
 var bnt_6die = {       // correct answer = 20/70 throws
   type: 'survey-text',
@@ -906,7 +899,7 @@ var bnt_6die = {       // correct answer = 20/70 throws
     placeholder: "_____ out of 70 throws",
     required: true}]
 };
-// timeline.push(bnt_6die);
+timeline.push(bnt_6die);
 
 var bnt_mushrooms = {       // correct answer = 50%
   type: 'survey-text',
@@ -918,7 +911,7 @@ var bnt_mushrooms = {       // correct answer = 50%
     placeholder: "_____ %",
     required: true}]
 };
-// timeline.push(bnt_mushrooms);
+timeline.push(bnt_mushrooms);
 
 var calccheck = {
   type: "survey-multi-choice",
@@ -927,7 +920,7 @@ var calccheck = {
               options: ["Yes", "No"],
               required:true}],
 };
-// timeline.push(calccheck);
+timeline.push(calccheck);
 
 // --------------------- COGNITIVE REFLECTION ---------------------------- //
 var crts = {
@@ -944,7 +937,7 @@ var crts = {
         crtPlaceholder: "_____ place"},             // intuitive = 1st, correct = 2nd
       {crtPrompt: "A farmer had 15 sheep and all but 8 died. How many are left?",
         crtPlaceholder: "_____ sheep left"},        // intuitive = 7, correct = 8
-      {crtPrompt: "Emily's father had three daughters." +
+      {crtPrompt: "Emily's father had three daughters. " +
         "The first two are named April and May.<br>What is the third daughter's name?",
         crtPlaceholder: "Third daughter's name"},   // intuitive = June, correct = Emily
       {crtPrompt: "How many cubic feet of dirt are there in a hole that is " +
@@ -962,15 +955,15 @@ var crts = {
     ],
     randomize_order: true
 };
-// timeline.push(crts);
+timeline.push(crts);
 
 // ----------------- finish with attention check question ---------------- //
 var attnCheck = {
   type: 'survey-text',
-  questions: [{prompt: ""}],
-  preamble: ["<div class = 'center-content'><img src = img/attnCheck2.JPG></img>"]
+  questions: [{prompt: "", placeholder: ""}],
+  preamble: ["<div class = 'center-content'><img src = img/attnCheck2.JPG></img>"],
 };
-// timeline.push(attnCheck);
+timeline.push(attnCheck);
 
 // start by running the "welcome" //
 welcome.run()
