@@ -99,10 +99,10 @@ var instructionsPreempt = {
   choices: ['Click here to begin'],
   on_start: function() {setTimeout(function(){setDisplay("jspsych-btn","")}, 70)},
   is_html: true,
-  stimulus: "The experiment will begin now.<br>This experiment consists of two tasks.<br><br>" +
+  stimulus: "This experiment consists of two tasks.<br><br>" +
     "The first task involves estimating how many objects are in an image.<br><br>" +
     "The second task is a series of numeracy questions.<br><br>" +
-    "You will begin the first task now."
+    "You will begin the first task now.<br><br>"
 };
 timeline.push(instructionsPreempt);
 
@@ -820,7 +820,28 @@ beast.push(earnings);
 var beastTimeline = {
   timeline: beast,
 };
-timeline.push(beastTimeline);
+// timeline.push(beastTimeline);
+
+// ---------- NON-NUMERIC ATTENTION CHECK ------------------------------ //
+// just to break it up between the BEAST and the numeracy items
+var middleAttnCheck = {
+  type: "survey-multi-choice",
+  preamble: ["<p align='center'><b>Now for some easy questions...</b></p>"],
+  questions: [
+    {prompt: "Are you currently breathing?",
+      options: ["Yes", "No"],
+      name: "breathing",
+      required: false},
+    {prompt: "What is the colour of grass?",
+      options: ["Green", "Blue"],
+      name: "grass",
+      required: false},
+    {prompt: "Do you prefer Mondays or Fridays?",
+      options: ["Mondays", "Fridays"],
+      name: "fridays",
+      required: false}],
+};
+// timeline.push(middleAttnCheck);
 
 // -------------------- NUMERACY ITEMS ---------------------------------- //
 var numeracyInstructions = {
