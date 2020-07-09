@@ -34,10 +34,10 @@ var introloop = [];
 // generate a random turkcode
 var turkcode = (Math.floor(Math.random() * 899999) + 100000).toString();
 var pid = Math.floor(Math.random() * 100000);
-var filename = "urns-expt13" + pid + "_turkcode_" + turkcode;
+var filename = "urns-expt13_" + pid + "_turkcode_" + turkcode;
 
 // to determine earnings in the BEAST
-// 1. randomly select a round (from 0-5)
+// 1. randomly select a round (from 0-4)
 var randRound = Math.round(Math.random() * (4-0) + 0);
 // 2. randomly select estimate A or B
 var noEstimates = ['A', 'B'];
@@ -129,7 +129,7 @@ var beastWelcome = {
   questions: [{prompt: //"In this HIT we ask you to complete a short task.<br>" +
     "During this task, you can earn Points. The number of Points you earn will depend on your responses.<br><br>" +
     "At the end of this HIT, your Points will be converted into your bonus (<b>100 Points = $1.00</b>).<br>" +
-    "Your bonus will be paid on top of your guaranteed participation fee of <b>" + "mturk fee here" + "</b>.<br>" +
+    "Your bonus will be paid on top of your guaranteed participation fee of <b>" + "$2.00" + "</b>.<br>" +
     "Upon completion, you will receive a random code to collect your payment on MTurk.<br><br>" +
     "Enter your MTurk ID below to proceed to the task instructions<br>" +
     "Please read these instructions carefully.<br><br>",
@@ -854,7 +854,7 @@ var numeracyInstructions = {
     "Try to answer as many as you can. There is no time limit.<br>" +
     "Do not use a calculator, but you can use pen and paper to work things out.<br><br>"
 };
-timeline.push(numeracyInstructions);
+// timeline.push(numeracyInstructions);
 
 // 3 items from Schwartz, Woloshin, Black, & Welch (1997)
 var schwartz_coin = {    // correct answer = 500
@@ -865,7 +865,7 @@ var schwartz_coin = {    // correct answer = 500
     placeholder: "_____ times out of 1,000",
     required: true}]
 };
-timeline.push(schwartz_coin);
+// timeline.push(schwartz_coin);
 
 var schwartz_bigbucks = {    // correct answer = 10
   type: 'survey-text',
@@ -876,7 +876,7 @@ var schwartz_bigbucks = {    // correct answer = 10
     placeholder: "_____ people out of 1,000",
     required: true}]
 };
-timeline.push(schwartz_bigbucks);
+// timeline.push(schwartz_bigbucks);
 
 var schwartz_car = {    // correct answer = 0.1%
   type: 'survey-text',
@@ -886,7 +886,7 @@ var schwartz_car = {    // correct answer = 0.1%
     placeholder: "_____ %",
     required: true}]
 };
-timeline.push(schwartz_car);
+// timeline.push(schwartz_car);
 
 // 4 items from Berlin Numeracy Test (Cokely, Galesic, Schulz, Ghazal, & Garcia-Retamero (2012))
 var bnt_5die = {      // correct answer = 30/50 throws
@@ -897,7 +897,7 @@ var bnt_5die = {      // correct answer = 30/50 throws
     placeholder: "_____ out of 50 throws",
     required: true}]
 };
-timeline.push(bnt_5die);
+// timeline.push(bnt_5die);
 
 var bnt_choir = {      // correct answer = 25%
   type: 'survey-text',
@@ -909,7 +909,7 @@ var bnt_choir = {      // correct answer = 25%
     placeholder: "Please indicate the probability in percent _____ %",
     required: true}]
 };
-timeline.push(bnt_choir);
+// timeline.push(bnt_choir);
 
 var bnt_6die = {       // correct answer = 20/70 throws
   type: 'survey-text',
@@ -920,7 +920,7 @@ var bnt_6die = {       // correct answer = 20/70 throws
     placeholder: "_____ out of 70 throws",
     required: true}]
 };
-timeline.push(bnt_6die);
+// timeline.push(bnt_6die);
 
 var bnt_mushrooms = {       // correct answer = 50%
   type: 'survey-text',
@@ -932,7 +932,7 @@ var bnt_mushrooms = {       // correct answer = 50%
     placeholder: "_____ %",
     required: true}]
 };
-timeline.push(bnt_mushrooms);
+// timeline.push(bnt_mushrooms);
 
 var calccheck = {
   type: "survey-multi-choice",
@@ -941,38 +941,63 @@ var calccheck = {
               options: ["Yes", "No"],
               required:true}],
 };
-timeline.push(calccheck);
+// timeline.push(calccheck);
 
 // --------------------- COGNITIVE REFLECTION ---------------------------- //
+var crtRace = ["1st place", "2nd place", "3rd place", "4th place"];
+var crtRaceShuffled = jsPsych.randomization.shuffle(crtRace);
+var crtSheep = ["1 sheep", "7 sheep", "8 sheep", "15 sheep"];
+var crtSheepShuffled = jsPsych.randomization.shuffle(crtSheep);
+var crtEmily = ["Emily", "June", "July"];
+var crtEmilyShuffled = jsPsych.randomization.shuffle(crtEmily);
+var crtHole = ["27 feet of dirt", "0 feet of dirt", "3 feet of dirt"];
+var crtHoleShuffled = jsPsych.randomization.shuffle(crtHole);
+// following options from Sirota and Juanchich (2018)
+var crtBat = ["5 cents", "10 cents", "9 cents", "1 cent"];
+var crtBatShuffled = jsPsych.randomization.shuffle(crtBat);
+var crtWidgets = ["5 minutes", "100 minutes", "20 minutes", "500 minutes"];
+var crtWidgetsShuffled = jsPsych.randomization.shuffle(crtWidgets);
+var crtLilypads = ["47 days", "24 days", "12 days", "36 days"];
+var crtLilypadsShuffled = jsPsych.randomization.shuffle(crtLilypads);
+
 var crts = {
   timeline: [{
-      type: 'survey-text',
+      type: 'survey-multi-choice',
       questions:
         [{prompt: jsPsych.timelineVariable('crtPrompt'),
-          placeholder: jsPsych.timelineVariable('crtPlaceholder'),
+          options: jsPsych.timelineVariable('crtOptions'),
+          name: jsPsych.timelineVariable('crtName'),
+          // placeholder: jsPsych.timelineVariable('crtPlaceholder'),
           required: true}],
     }],
     timeline_variables: [
       {crtPrompt: "If you're running a race and you pass the person " +
       "in second place, what place are you in?",
-        crtPlaceholder: "_____ place"},             // intuitive = 1st, correct = 2nd
+        crtOptions: crtRaceShuffled,
+        crtName: "crt_race"},             // intuitive = 1st, correct = 2nd
       {crtPrompt: "A farmer had 15 sheep and all but 8 died. How many are left?",
-        crtPlaceholder: "_____ sheep left"},        // intuitive = 7, correct = 8
+        crtOptions: crtSheepShuffled,
+        crtName: "crt_sheep"},        // intuitive = 7, correct = 8
       {crtPrompt: "Emily's father had three daughters. " +
         "The first two are named April and May.<br>What is the third daughter's name?",
-        crtPlaceholder: "Third daughter's name"},   // intuitive = June, correct = Emily
+        crtOptions: crtEmilyShuffled,
+        crtName: "crt_emily"},   // intuitive = June, correct = Emily
       {crtPrompt: "How many cubic feet of dirt are there in a hole that is " +
         "3' deep x 3' wide x 3' long?",
-        crtPlaceholder: "_____ cubic feet of dirt"},// intuitive = 27, correct = none
+        crtOptions: crtHoleShuffled,
+        crtName: "crt_hole"},// intuitive = 27, correct = none
       {crtPrompt: "A bat and a ball cost $1.10 in total.The bat costs $1.00 more than the ball.<br>" +
       "How much does the ball cost?",
-        crtPlaceholder: "_____ cents"},            // intuitive = 10, correct = 5
+        crtOptions: crtBatShuffled,
+        crtName: "crt_bat"},            // intuitive = 10, correct = 5
       {crtPrompt: "If it takes 5 machines 5 minutes to make 5 widgets,<br>" +
         "how long would it take 100 machines to make 100 widgets?",
-        crtPlaceholder: "_____ minutes"},           // intuitive = 100, correct = 5
+        crtOptions: crtWidgetsShuffled,
+        crtName: "crt_widgets"},           // intuitive = 100, correct = 5
       {crtPrompt: "In a lake, there is a patch of lily pads. Every day, the patch doubles in size.<br>" +
         "If it takes 48 days for the patch to cover the entire lake,<br>how long would it take for the patch to cover half of the lake?",
-        crtPlaceholder: "_____ days"},             // intuitive = 24, correct = 47
+        crtOptions: crtLilypadsShuffled,
+        crtName: "crt_lilypads"},             // intuitive = 24, correct = 47
     ],
     randomize_order: true
 };

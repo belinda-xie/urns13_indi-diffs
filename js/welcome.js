@@ -3,20 +3,19 @@ var welcome = {};
 // --------------  things that vary from task to task --------------
 
 welcome.task = {};
-welcome.task.blurb = '<b>"The jar guessing game"</b> is a short psychological study investigating how people make decisions.';
-welcome.task.time = '7 minutes';
-welcome.task.pay = 'USD $1.20';
+welcome.task.blurb = '<b>"The jar guessing game - follow-up"</b> is a short psychological study investigating how people make decisions.';
+welcome.task.time = '15 minutes';
+welcome.task.pay = 'USD $2.00';
 
 // --------------  things that vary between ethics approvals --------------
 
 welcome.ethics = {};
 welcome.ethics.approval = '2918';
-welcome.ethics.name = 'The jar guessing game';
+welcome.ethics.name = 'The jar guessing game - follow-up';
 welcome.ethics.selection = 'You are invited to participate in a study of social learning and probabilistic reasoning.' +
 ' We hope to learn how people incorporate social and asocial information when making probabilistic judgments. ' +
-' You were selected as a possible participant in this study because you volunteered interest in this study.';
-welcome.ethics.description = 'If you decide to participate, we will show you some evidence (e.g., coloured balls), and then ask you to make conclusions (e.g., guess which coloured jar the balls came from). ' +
-'The evidence might be given by other people (e.g., other people\'s guesses about which jar the balls come from), or evidence given directly to you to interpret (e.g., balls taken from that jar). ' +
+' You were selected as a possible participant in this study because you have previously participated in one of our studies, and you have volunteered interest in this study.';
+welcome.ethics.description = 'If you decide to participate, we will ask you to answer several numeric questions. These involve estimating the number of objects in an image, and answering numeracy questions.' +
 '<br><br>No risks are reasonably expected as a result of your' +
 ' participation in this study.<br>We cannot and do not guarantee or promise' +
 ' that you will receive any benefits from this study.'
