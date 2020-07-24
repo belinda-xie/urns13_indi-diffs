@@ -161,7 +161,7 @@ jsPsych.plugins['survey-text'] = (function() {
       var trialdata = {
         "rt": response_time,
         "responses": JSON.stringify(question_data),
-        "prompt":JSON.stringify(question.prompt)
+        "prompt": question.prompt
       };
 
       display_element.innerHTML = '';

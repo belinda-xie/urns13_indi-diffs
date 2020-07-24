@@ -3,9 +3,9 @@ var welcome = {};
 // --------------  things that vary from task to task --------------
 
 welcome.task = {};
-welcome.task.blurb = '<b>"The jar guessing game - follow-up"</b> is a short psychological study investigating how people make decisions.';
+welcome.task.blurb = '<b>"Jar Game - Follow-up"</b> is a short psychological study investigating how people make decisions.';
 welcome.task.time = '15 minutes';
-welcome.task.pay = 'USD $2.00';
+welcome.task.pay = 'USD $3.00';
 
 // --------------  things that vary between ethics approvals --------------
 

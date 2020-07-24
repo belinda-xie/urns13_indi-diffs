@@ -172,7 +172,8 @@ jsPsych.plugins['survey-text-time'] = (function() {
       // save data
       var trialdata = {
         "rt": response_time,
-        "responses": JSON.stringify(question_data)
+        "responses": JSON.stringify(question_data),
+        "stimulus": trial.preamble
       };
 
       display_element.innerHTML = '';
@@ -208,7 +209,7 @@ jsPsych.plugins['survey-text-time'] = (function() {
       var trial_data = {
         "rt": response_time,
         "responses": JSON.stringify(question_data),
-        "stimulus": JSON.stringify(trial.preamble)
+        "stimulus": trial.preamble
       };
 
       jsPsych.finishTrial(trial_data);
